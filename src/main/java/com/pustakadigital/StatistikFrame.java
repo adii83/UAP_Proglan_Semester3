@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class StatistikFrame extends JFrame {
     private JPanel chartPanel;
-
+// oke
     public StatistikFrame() {
         setTitle("Statistik Buku");
         setSize(800, 600);
