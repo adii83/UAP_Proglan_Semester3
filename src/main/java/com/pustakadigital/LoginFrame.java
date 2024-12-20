@@ -58,6 +58,8 @@ public class LoginFrame extends JFrame {
         }
     }
 
+    //hehe
+
     private class RegisterButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
