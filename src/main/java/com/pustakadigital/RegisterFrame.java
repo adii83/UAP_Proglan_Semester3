@@ -13,34 +13,54 @@ public class RegisterFrame extends JFrame {
 
     public RegisterFrame() {
         setTitle("Register");
-        setSize(300, 200);
+        setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(3, 2));
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-        userDAO = new UserDAO();
+        // Panel atas dengan judul
+        JPanel titlePanel = new JPanel();
+        JLabel titleLabel = new JLabel("Create an Account");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titlePanel.add(titleLabel);
+        add(titlePanel, BorderLayout.NORTH);
 
-        // Username Field
-        add(new JLabel("Username:"));
+        // Panel tengah untuk form register
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        formPanel.add(new JLabel("Username:"));
         usernameField = new JTextField();
-        add(usernameField);
+        formPanel.add(usernameField);
 
-        // Password Field
-        add(new JLabel("Password:"));
+        formPanel.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
-        add(passwordField);
+        formPanel.add(passwordField);
 
-        // Register Button
+        // Tombol Register
         registerButton = new JButton("Register");
         registerButton.addActionListener(new RegisterButtonListener());
-        add(registerButton);
+        formPanel.add(registerButton);
 
-        // Back Button
+        // Tombol Kembali ke Login
         backButton = new JButton("Back to Login");
         backButton.addActionListener(e -> {
             new LoginFrame().setVisible(true);
             dispose();
         });
-        add(backButton);
+        formPanel.add(backButton);
+
+        add(formPanel, BorderLayout.CENTER);
+
+        // Panel bawah untuk catatan
+        JPanel footerPanel = new JPanel();
+        JLabel footerLabel = new JLabel("© 2024 Pustaka Digital");
+        footerLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        footerPanel.add(footerLabel);
+        add(footerPanel, BorderLayout.SOUTH);
+
+        // Inisialisasi DAO
+        userDAO = new UserDAO();
     }
 
     private class RegisterButtonListener implements ActionListener {
@@ -49,7 +69,6 @@ public class RegisterFrame extends JFrame {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            // Validasi Input
             if (username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Username and password must not be empty!", "Validation Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -67,7 +86,6 @@ public class RegisterFrame extends JFrame {
         }
 
         private boolean isValidPassword(String password) {
-            // Validasi Password
             return password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,}$");
         }
     }

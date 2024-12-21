@@ -8,39 +8,60 @@ import java.awt.event.ActionListener;
 public class LoginFrame extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
-    private JButton loginButton, registerButton;
+    private JButton loginButton, noAccountButton;
     private UserDAO userDAO;
 
     public LoginFrame() {
+        // Judul dan pengaturan frame
         setTitle("Login");
-        setSize(300, 200);
+        setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(3, 2));
+        setLocationRelativeTo(null); // Posisikan di tengah layar
+        setLayout(new BorderLayout());
 
-        userDAO = new UserDAO();
+        // Panel atas dengan judul
+        JPanel titlePanel = new JPanel();
+        JLabel titleLabel = new JLabel("Welcome to Pustaka Digital");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titlePanel.add(titleLabel);
+        add(titlePanel, BorderLayout.NORTH);
 
-        // Username Field
-        add(new JLabel("Username:"));
+        // Panel tengah untuk form login
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+
+        formPanel.add(new JLabel("Username:"));
         usernameField = new JTextField();
-        add(usernameField);
+        formPanel.add(usernameField);
 
-        // Password Field
-        add(new JLabel("Password:"));
+        formPanel.add(new JLabel("Password:"));
         passwordField = new JPasswordField();
-        add(passwordField);
+        formPanel.add(passwordField);
 
-        // Login Button
+        // Tombol Login
         loginButton = new JButton("Login");
         loginButton.addActionListener(new LoginButtonListener());
-        add(loginButton);
+        formPanel.add(loginButton);
 
-        // Register Button
-        registerButton = new JButton("Register");
-        registerButton.addActionListener(e -> {
+        // Tombol "Belum punya akun?"
+        noAccountButton = new JButton("Belum punya akun?");
+        noAccountButton.addActionListener(e -> {
             new RegisterFrame().setVisible(true);
             dispose();
         });
-        add(registerButton);
+        formPanel.add(noAccountButton);
+
+        add(formPanel, BorderLayout.CENTER);
+
+        // Panel bawah untuk catatan
+        JPanel footerPanel = new JPanel();
+        JLabel footerLabel = new JLabel("© 2024 Pustaka Digital");
+        footerLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        footerPanel.add(footerLabel);
+        add(footerPanel, BorderLayout.SOUTH);
+
+        // Inisialisasi DAO
+        userDAO = new UserDAO();
     }
 
     private class LoginButtonListener implements ActionListener {
@@ -50,7 +71,7 @@ public class LoginFrame extends JFrame {
             String password = new String(passwordField.getPassword());
 
             if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Username and password must not be empty!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Username dan Password harus diisi!", "Validation Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
