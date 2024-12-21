@@ -55,9 +55,28 @@ public class AddBookFrame extends JFrame {
             String judul = judulField.getText();
             String penulis = penulisField.getText();
             String genre = genreField.getText();
-            int tahun = Integer.parseInt(tahunField.getText());
+            String tahunText = tahunField.getText();
 
-            String gambarSampul = fileChooser.getSelectedFile().getAbsolutePath();
+            // Validasi input
+            if (judul.isEmpty() || penulis.isEmpty() || genre.isEmpty() || tahunText.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Semua field harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int tahun;
+            try {
+                tahun = Integer.parseInt(tahunText);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Tahun harus berupa angka!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String gambarSampul = fileChooser.getSelectedFile() != null ? fileChooser.getSelectedFile().getAbsolutePath() : "";
+
+            if (gambarSampul.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Silakan pilih gambar sampul!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
             Buku buku = new Buku(0, judul, penulis, genre, tahun, gambarSampul);
             bukuDAO.addBuku(buku);
