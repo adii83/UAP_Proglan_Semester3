@@ -8,7 +8,7 @@ import java.util.List;
 public class BukuDAO {
 
     public void addBuku(Buku buku) {
-        String query = "INSERT INTO buku (judul, penulis, genre, tahun, gambar_sampul) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO " + Database.TABLE_BUKU + " (judul, penulis, genre, tahun, gambar_sampul) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, buku.getJudul());

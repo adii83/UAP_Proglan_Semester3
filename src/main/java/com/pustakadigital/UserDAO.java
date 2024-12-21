@@ -18,20 +18,36 @@ public class UserDAO {
             return rs.next();
         } catch (SQLException e) {
             System.out.println("Error logging in: " + e.getMessage());
-            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat login: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error logging in: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
         return false;
     }
 
     public void register(User user) {
-        String query = "INSERT INTO users (username, password) VALUES (?, ?)";
+        String checkQuery = "SELECT COUNT(*) FROM users WHERE username = ?";
+        String insertQuery = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+
         try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            stmt.executeUpdate();
+             PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
+             PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+
+            // Periksa apakah username sudah ada
+            checkStmt.setString(1, user.getUsername());
+            ResultSet rs = checkStmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                JOptionPane.showMessageDialog(null, "Username already exists!", "Registration Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Tambahkan pengguna baru
+            insertStmt.setString(1, user.getUsername());
+            insertStmt.setString(2, user.getPassword());
+//            insertStmt.setString(3, user.getEmail());
+            insertStmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "User registered successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
             System.out.println("Error registering user: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error registering user: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -8,24 +8,32 @@ public class Database {
     private static final String DB_URL = "jdbc:sqlite:pustaka.db";
     private static Connection connection = null;
 
+    public static final String TABLE_BUKU = "buku";
+    public static final String TABLE_USERS = "users";
+
     public static Connection connect() {
         try {
-            if (connection == null) {
+            if (connection == null || connection.isClosed()) {
                 connection = DriverManager.getConnection(DB_URL);
             }
         } catch (SQLException e) {
             System.out.println("Error connecting to database: " + e.getMessage());
+            // Optional: Show a dialog to the user
+            // JOptionPane.showMessageDialog(null, "Error connecting to database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
         return connection;
     }
 
     public static void close() {
         try {
-            if (connection != null) {
+            if (connection != null && !connection.isClosed()) {
                 connection.close();
+                connection = null; // Set to null after closing
             }
         } catch (SQLException e) {
             System.out.println("Error closing database: " + e.getMessage());
+            // Optional: Show a dialog to the user
+            // JOptionPane.showMessageDialog(null, "Error closing database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -41,24 +41,32 @@ public class LoginFrame extends JFrame {
         add(registerButton);
     }
 
-    private class LoginButtonListener implements ActionListener {
+    class LoginButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
-            if (userDAO.login(username, password)) {
-                JOptionPane.showMessageDialog(null, "Login successful!");
-                // Open the main application frame here
-                new MainFrame().setVisible(true);
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(null, "Invalid username or password");
+            // Validasi input
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Username and password must not be empty!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            try {
+                if (userDAO.login(username, password)) {
+                    JOptionPane.showMessageDialog(null, "Login successful!");
+                    new MainFrame().setVisible(true);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid username or password.", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "An error occurred during login: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
-    //hehe
 
     private class RegisterButtonListener implements ActionListener {
         @Override
@@ -66,9 +74,15 @@ public class LoginFrame extends JFrame {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
 
+            // Validasi input
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Username dan Password harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             User user = new User(0, username, password);
             userDAO.register(user);
-            JOptionPane.showMessageDialog(null, "Registration successful!");
+            JOptionPane.showMessageDialog(null, "Registration successful! You can now log in.");
         }
     }
 }
