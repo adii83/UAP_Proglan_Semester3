@@ -1,5 +1,6 @@
 package com.pustakadigital;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +18,7 @@ public class UserDAO {
             return rs.next();
         } catch (SQLException e) {
             System.out.println("Error logging in: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat login: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         return false;
     }
