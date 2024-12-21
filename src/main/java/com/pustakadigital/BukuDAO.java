@@ -1,5 +1,6 @@
 package com.pustakadigital;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,9 @@ public class BukuDAO {
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error adding book: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat menambahkan buku: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     public List<Buku> getAllBuku() {
         List<Buku> bukuList = new ArrayList<>();
         String query = "SELECT * FROM buku";
