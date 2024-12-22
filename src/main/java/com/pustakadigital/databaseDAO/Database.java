@@ -1,4 +1,4 @@
-package com.pustakadigital;
+package com.pustakadigital.databaseDAO;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

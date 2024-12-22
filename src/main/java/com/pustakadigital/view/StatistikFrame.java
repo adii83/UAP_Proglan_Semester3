@@ -1,4 +1,6 @@
-package com.pustakadigital;
+package com.pustakadigital.view;
+
+import com.pustakadigital.model.Statistik;
 
 import javax.swing.*;
 import java.awt.*;

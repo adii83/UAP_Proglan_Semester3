@@ -1,12 +1,12 @@
-package com.pustakadigital;
+package com.pustakadigital.model;
 
+import com.pustakadigital.databaseDAO.Database;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.sql.*;
-import java.util.List;
 
 public class Statistik {
 

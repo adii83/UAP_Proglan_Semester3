@@ -1,4 +1,4 @@
-package com.pustakadigital;
+package com.pustakadigital.model;
 
 public class Buku {
     private int id;

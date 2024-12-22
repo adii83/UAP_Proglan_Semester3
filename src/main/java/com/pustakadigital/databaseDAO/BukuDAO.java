@@ -1,4 +1,6 @@
-package com.pustakadigital;
+package com.pustakadigital.databaseDAO;
+
+import com.pustakadigital.model.Buku;
 
 import javax.swing.*;
 import java.sql.*;

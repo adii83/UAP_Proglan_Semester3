@@ -1,4 +1,4 @@
-package com.pustakadigital;
+package com.pustakadigital.view;
 
 import javax.swing.*;
 import java.awt.*;

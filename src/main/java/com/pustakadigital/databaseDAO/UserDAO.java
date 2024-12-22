@@ -1,4 +1,4 @@
-package com.pustakadigital;
+package com.pustakadigital.databaseDAO;
 
 import javax.swing.*;
 import java.sql.Connection;

@@ -1,5 +1,8 @@
 //Terbaru
-package com.pustakadigital;
+package com.pustakadigital.view;
+
+import com.pustakadigital.model.Buku;
+import com.pustakadigital.databaseDAO.BukuDAO;
 
 import javax.swing.*;
 import java.awt.*;

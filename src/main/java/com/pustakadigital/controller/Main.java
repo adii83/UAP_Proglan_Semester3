@@ -1,4 +1,6 @@
-package com.pustakadigital;
+package com.pustakadigital.controller;
+
+import com.pustakadigital.view.LoginFrame;
 
 import javax.swing.*;
 

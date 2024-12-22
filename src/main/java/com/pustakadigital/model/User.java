@@ -1,4 +1,4 @@
-package com.pustakadigital;
+package com.pustakadigital.model;
 
 public class User {
     private int id;
