@@ -16,7 +16,7 @@ public class LoginFrame extends JFrame {
     public LoginFrame() {
         // Judul dan pengaturan frame
         setTitle("Login");
-        setSize(400, 300);
+        setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null); // Posisikan di tengah layar
         setLayout(new BorderLayout());
