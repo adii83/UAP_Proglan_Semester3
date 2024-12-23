@@ -5,7 +5,7 @@ import com.pustakadigital.view.LoginFrame;
 import javax.swing.*;
 
 public class Main {
-
+//anjnj
     public static void main(String[] args) {
         // Menjalankan aplikasi di thread Swing (Event Dispatch Thread)
         SwingUtilities.invokeLater(new Runnable() {
