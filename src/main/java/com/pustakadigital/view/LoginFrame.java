@@ -14,56 +14,93 @@ public class LoginFrame extends JFrame {
     private UserDAO userDAO;
 
     public LoginFrame() {
-        // Judul dan pengaturan frame
         setTitle("Login");
-        setSize(500, 400);
+        setSize(900, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); // Posisikan di tengah layar
-        setLayout(new BorderLayout());
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(1, 2));
 
-        // Panel atas dengan judul
-        JPanel titlePanel = new JPanel();
-        JLabel titleLabel = new JLabel("Welcome to Pustaka Digital");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titlePanel.add(titleLabel);
-        add(titlePanel, BorderLayout.NORTH);
+        // Panel untuk Sign In
+        JPanel signInPanel = createSignInPanel();
+        signInPanel.setBackground(new Color(0, 128, 0));
 
-        // Panel tengah untuk form login
-        JPanel formPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        // Panel untuk Sign Up
+        JPanel signUpPanel = createSignUpPanel();
+        signUpPanel.setBackground(Color.WHITE);
 
-        formPanel.add(new JLabel("Username:"));
-        usernameField = new JTextField();
-        formPanel.add(usernameField);
+        add(signInPanel);
+        add(signUpPanel);
 
-        formPanel.add(new JLabel("Password:"));
-        passwordField = new JPasswordField();
-        formPanel.add(passwordField);
+        userDAO = new UserDAO();
+    }
 
-        // Tombol Login
-        loginButton = new JButton("Login");
+    private JPanel createSignInPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel title = new JLabel("Welcome Back!");
+        title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setForeground(Color.WHITE);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(title, gbc);
+
+        JLabel message = new JLabel("To keep connected with us please login with your personal info");
+        message.setFont(new Font("Arial", Font.PLAIN, 14));
+        message.setForeground(Color.WHITE);
+        gbc.gridy = 1;
+        panel.add(message, gbc);
+
+        usernameField = new JTextField(20);
+        usernameField.setBorder(BorderFactory.createTitledBorder("Username"));
+        gbc.gridy = 2;
+        panel.add(usernameField, gbc);
+
+        passwordField = new JPasswordField(20);
+        passwordField.setBorder(BorderFactory.createTitledBorder("Password"));
+        gbc.gridy = 3;
+        panel.add(passwordField, gbc);
+
+        loginButton = new JButton("SIGN IN");
+        loginButton.setBackground(Color.WHITE);
+        loginButton.setForeground(new Color(0, 128, 0));
+        loginButton.setFocusPainted(false);
         loginButton.addActionListener(new LoginButtonListener());
-        formPanel.add(loginButton);
+        gbc.gridy = 4;
+        panel.add(loginButton, gbc);
 
-        // Tombol "Belum punya akun?"
-        noAccountButton = new JButton("Belum punya akun?");
+        return panel;
+    }
+
+    private JPanel createSignUpPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel title = new JLabel("Create Account");
+        title.setFont(new Font("Arial", Font.BOLD, 24));
+        title.setForeground(new Color(0, 128, 0));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        panel.add(title, gbc);
+
+        noAccountButton = new JButton("SIGN UP");
+        noAccountButton.setBackground(new Color(0, 128, 0));
+        noAccountButton.setForeground(Color.WHITE);
+        noAccountButton.setFocusPainted(false);
         noAccountButton.addActionListener(e -> {
             new RegisterFrame().setVisible(true);
             dispose();
         });
-        formPanel.add(noAccountButton);
+        gbc.gridy = 1;
+        panel.add(noAccountButton, gbc);
 
-        add(formPanel, BorderLayout.CENTER);
-
-        // Panel bawah untuk catatan
-        JPanel footerPanel = new JPanel();
-        JLabel footerLabel = new JLabel("© 2024 Pustaka Digital");
-        footerLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        footerPanel.add(footerLabel);
-        add(footerPanel, BorderLayout.SOUTH);
-
-        // Inisialisasi DAO
-        userDAO = new UserDAO();
+        return panel;
     }
 
     private class LoginButtonListener implements ActionListener {
