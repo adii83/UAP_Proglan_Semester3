@@ -121,7 +121,7 @@ public class LoginFrame extends JFrame {
                     if ("admin".equals(role)) {
                         new AdminFrame().setVisible(true);
                     } else {
-                        new MainFrame().setVisible(true);
+                        new DashbordPenggunaFrame(username).setVisible(true);
                     }
                     dispose();
                 } else {
