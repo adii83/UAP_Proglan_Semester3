@@ -284,13 +284,26 @@ public class DashbordPenggunaFrame extends JFrame {
         OpenLibraryAPI api = new OpenLibraryAPI();
         String bookISBN = buku.getIsbn();
         JSONObject bookDetails = api.getBookInfoByISBN(bookISBN);
-        
+
         try {
-            String openLibraryUrl = bookDetails.getString("url");
-            Desktop.getDesktop().browse(new URI(openLibraryUrl));
+
+            System.out.println("JSON Response: " + bookDetails.toString(2)); // Indentasi untuk keterbacaan
+
+
+            if (bookDetails.has("ISBN:" + bookISBN)) {
+                JSONObject bookInfo = bookDetails.getJSONObject("ISBN:" + bookISBN);
+                if (bookInfo.has("url")) {
+                    String openLibraryUrl = bookInfo.getString("url");
+                    Desktop.getDesktop().browse(new URI(openLibraryUrl));
+                } else {
+                    JOptionPane.showMessageDialog(this, "URL tidak tersedia untuk buku ini.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Data buku tidak ditemukan.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+            }
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error opening URL.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat membuka URL.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
