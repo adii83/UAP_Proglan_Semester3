@@ -43,12 +43,14 @@ public class AdminFrame extends JFrame {
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
         JButton manageUsersButton = new JButton("Manage Users");
-        JButton addBookButton = new JButton("Tambah Buku");
+        JButton addBookManualButton = new JButton("Tambah Buku Manual");
+        JButton addBookISBNButton = new JButton("Tambah Buku dengan ISBN");
         JButton deleteBookButton = new JButton("Hapus Buku");
         JButton logoutButton = new JButton("Logout");
 
         buttonPanel.add(manageUsersButton);
-        buttonPanel.add(addBookButton);
+        buttonPanel.add(addBookManualButton);
+        buttonPanel.add(addBookISBNButton);
         buttonPanel.add(deleteBookButton);
         buttonPanel.add(logoutButton);
 
@@ -65,10 +67,16 @@ public class AdminFrame extends JFrame {
         });
 
         // Action listeners
-        addBookButton.addActionListener(e -> {
-            AddBookFrame addBookFrame = new AddBookFrame(this, () -> loadBukuList("Semua"));
-            addBookFrame.setVisible(true);
+        addBookManualButton.addActionListener(e -> {
+            AddBookManualFrame addBookManualFrame = new AddBookManualFrame(this, () -> loadBukuList("Semua"));
+            addBookManualFrame.setVisible(true);
         });
+
+        addBookISBNButton.addActionListener(e -> {
+            AddBookISBNFrame addBookISBNFrame = new AddBookISBNFrame(this, () -> loadBukuList("Semua"));
+            addBookISBNFrame.setVisible(true);
+        });
+
         deleteBookButton.addActionListener(e -> deleteSelectedBook());
         logoutButton.addActionListener(e -> {
             new LoginFrame().setVisible(true);
@@ -76,7 +84,7 @@ public class AdminFrame extends JFrame {
         });
     }
 
-    private void loadBukuList(String genre) {
+    public void loadBukuList(String genre) {
         List<Buku> bukuListData = bukuDAO.getAllBuku();
         bukuListModel.clear();
         for (Buku buku : bukuListData) {

@@ -1,13 +1,18 @@
 package com.pustakadigital.view;
-
+import com.pustakadigital.api.OpenLibraryAPI;
 import com.pustakadigital.databaseDAO.BukuDAO;
 import com.pustakadigital.model.Buku;
 import com.formdev.flatlaf.FlatDarkLaf;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class DashbordPenggunaFrame extends JFrame {
     private JPanel bookPanel;
@@ -162,7 +167,7 @@ public class DashbordPenggunaFrame extends JFrame {
         bukuPanelItem.setLayout(new BorderLayout());
         bukuPanelItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
         bukuPanelItem.setBackground(new Color(255, 255, 255));
-        bukuPanelItem.setPreferredSize(new Dimension(200, 300)); // Ukuran tetap untuk setiap buku
+        bukuPanelItem.setPreferredSize(new Dimension(200, 300));
 
         // Gambar sampul buku
         ImageIcon imageIcon = new ImageIcon(buku.getGambarSampul());
@@ -175,35 +180,73 @@ public class DashbordPenggunaFrame extends JFrame {
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setBackground(new Color(255, 255, 255));
-        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10)); // Padding untuk textPanel
+        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
 
-        // Margin antara gambar dan teks (judul)
         textPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Judul buku
         JLabel titleLabel = new JLabel(buku.getJudul());
         titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Pengarang buku
         JLabel authorLabel = new JLabel(buku.getPenulis());
         authorLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         authorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         authorLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        authorLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0)); // Tambahkan padding atas
+        authorLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         textPanel.add(titleLabel);
-        textPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Tambahkan jarak antara judul dan pengarang
+        textPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         textPanel.add(authorLabel);
 
         bukuPanelItem.add(textPanel, BorderLayout.SOUTH);
+
+        // Tambahkan MouseListener untuk membuka detail buku
+        bukuPanelItem.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                showBookDetails(buku);
+            }
+        });
 
         return bukuPanelItem;
     }
 
     public void refreshBukuList() {
         loadBooks(); // Assuming loadBooks() refreshes the book list
+    }
+
+    private void showBookDetails(Buku buku) {
+        String isbn = buku.getIsbn(); // Gunakan ISBN dari objek Buku
+
+        OpenLibraryAPI openLibraryAPI = new OpenLibraryAPI();
+        JSONObject bookInfo = openLibraryAPI.getBookInfoByISBN(isbn);
+
+        if (bookInfo != null) {
+            String title = bookInfo.optString("title", "Judul tidak tersedia");
+            String authors = bookInfo.optJSONArray("authors").toString();
+            String description = bookInfo.optString("description", "Deskripsi tidak tersedia");
+            String coverUrl = bookInfo.optJSONObject("cover").optString("large", ""); // URL sampul besar
+
+            // Tampilkan detail buku dalam dialog
+            JOptionPane.showMessageDialog(this,
+                    "Judul: " + title + "\nPenulis: " + authors + "\nDeskripsi: " + description,
+                    "Detail Buku", JOptionPane.INFORMATION_MESSAGE);
+
+            // Jika Anda ingin menampilkan sampul, Anda bisa menggunakan JLabel dengan ImageIcon
+            if (!coverUrl.isEmpty()) {
+                try {
+                    URL url = new URI(coverUrl).toURL();
+                    ImageIcon coverImage = new ImageIcon(url);
+                    JLabel coverLabel = new JLabel(coverImage);
+                    JOptionPane.showMessageDialog(this, coverLabel, "Sampul Buku", JOptionPane.PLAIN_MESSAGE);
+                } catch (MalformedURLException | URISyntaxException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "URL sampul tidak valid.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Tidak ada detail yang ditemukan untuk buku ini.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public static void main(String[] args) {

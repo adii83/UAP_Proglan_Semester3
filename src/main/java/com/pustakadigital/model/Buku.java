@@ -7,15 +7,22 @@ public class Buku {
     private String genre;
     private int tahun;
     private String gambarSampul;
+    private String isbn;
 
-    // Constructor
+    // Constructor for AddBookManualFrame
     public Buku(int id, String judul, String penulis, String genre, int tahun, String gambarSampul) {
+        this(id, judul, penulis, genre, tahun, gambarSampul, null);
+    }
+
+    // Constructor for AddBookISBNFrame
+    public Buku(int id, String judul, String penulis, String genre, int tahun, String gambarSampul, String isbn) {
         this.id = id;
         this.judul = judul;
         this.penulis = penulis;
         this.genre = genre;
         this.tahun = tahun;
         this.gambarSampul = gambarSampul;
+        this.isbn = isbn;
     }
 
     // Getter dan Setter untuk id
@@ -70,5 +77,9 @@ public class Buku {
 
     public void setGambarSampul(String gambarSampul) {
         this.gambarSampul = gambarSampul;
+    }
+
+    public String getIsbn() {
+        return isbn;
     }
 }
