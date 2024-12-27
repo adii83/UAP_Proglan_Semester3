@@ -58,6 +58,12 @@ public class AdminFrame extends JFrame {
         genreComboBox = new JComboBox<>(new String[]{"Semua", "Fiksi", "Non-Fiksi", "Sejarah", "Sains"});
         add(genreComboBox, BorderLayout.NORTH);
 
+        // Tambahkan ActionListener ke genreComboBox
+        genreComboBox.addActionListener(e -> {
+            String selectedGenre = (String) genreComboBox.getSelectedItem();
+            loadBukuList(selectedGenre);
+        });
+
         // Action listeners
         addBookButton.addActionListener(e -> {
             AddBookFrame addBookFrame = new AddBookFrame(this, () -> loadBukuList("Semua"));

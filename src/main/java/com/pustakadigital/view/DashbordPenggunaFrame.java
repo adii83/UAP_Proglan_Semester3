@@ -84,11 +84,14 @@ public class DashbordPenggunaFrame extends JFrame {
         JPanel outerBookPanel = new JPanel(new BorderLayout());
         outerBookPanel.setBackground(new Color(245, 245, 245));
 
-        bookPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20)); // Tata letak dinamis dengan jarak antar buku
+        // Gunakan GridLayout dengan 4 kolom tetap
+        bookPanel = new JPanel(new GridLayout(0, 4, 20, 20)); // 0 baris dan 4 kolom dengan jarak antar elemen
         bookPanel.setBackground(new Color(245, 245, 245));
         bookPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Margin antar panel buku
 
         JScrollPane scrollPane = new JScrollPane(bookPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS); // Selalu tampilkan scroll bar vertikal
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Jangan tampilkan scroll bar horizontal
         scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Padding untuk scroll pane
         scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Smooth scrolling
         outerBookPanel.add(scrollPane, BorderLayout.CENTER);
@@ -130,53 +133,73 @@ public class DashbordPenggunaFrame extends JFrame {
         List<Buku> booksToDisplay = bukuListData.subList(currentBookIndex, endIndex);
 
         for (Buku buku : booksToDisplay) {
-            JPanel bukuPanelItem = new JPanel();
-            bukuPanelItem.setLayout(new BorderLayout());
-            bukuPanelItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1)); // Garis pembatas
-            bukuPanelItem.setBackground(new Color(255, 255, 255));
-            bukuPanelItem.setPreferredSize(new Dimension(200, 300)); // Ukuran tetap untuk setiap buku
-        
-            // Gambar sampul buku
-            ImageIcon imageIcon = new ImageIcon(buku.getGambarSampul());
-            Image image = imageIcon.getImage().getScaledInstance(150, 200, Image.SCALE_SMOOTH); // Ukuran gambar
-            JLabel imageLabel = new JLabel(new ImageIcon(image));
-            imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
-        
-            // Panel teks (judul dan pengarang)
-            JPanel textPanel = new JPanel();
-            textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-            textPanel.setBackground(new Color(255, 255, 255));
-        
-            // Margin antara gambar dan teks (judul)
-            textPanel.add(Box.createRigidArea(new Dimension(0, 3))); // Tambahkan margin vertikal 10px
-        
-            // Judul buku
-            JLabel titleLabel = new JLabel(buku.getJudul());
-            titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
-            titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
-            // Pengarang buku
-            JLabel authorLabel = new JLabel(buku.getPenulis());
-            authorLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-            authorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            authorLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            authorLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0)); // Tambahkan padding atas sebesar 10px
-        
-            textPanel.add(titleLabel);
-            textPanel.add(authorLabel);
-        
-            bukuPanelItem.add(textPanel, BorderLayout.SOUTH);
-        
-            bookPanel.add(bukuPanelItem);
+            bookPanel.add(createBookPanel(buku)); // Tambahkan buku ke panel
         }
-        
+
+        // Tambahkan placeholder jika jumlah buku kurang dari 4
+        int remainingSlots = 4 - (booksToDisplay.size() % 4);
+        if (remainingSlots != 4) { // Hanya tambahkan placeholder jika diperlukan
+            addPlaceholders(remainingSlots);
+        }
+
         // Update currentBookIndex untuk halaman berikutnya
         currentBookIndex = endIndex;
 
         bookPanel.revalidate();
         bookPanel.repaint();
+    }
+
+    private void addPlaceholders(int placeholders) {
+        for (int i = 0; i < placeholders; i++) {
+            JPanel placeholder = new JPanel();
+            placeholder.setBackground(new Color(245, 245, 245)); // Warna latar belakang placeholder sama dengan bookPanel
+            bookPanel.add(placeholder);
+        }
+    }
+
+    private JPanel createBookPanel(Buku buku) {
+        JPanel bukuPanelItem = new JPanel();
+        bukuPanelItem.setLayout(new BorderLayout());
+        bukuPanelItem.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+        bukuPanelItem.setBackground(new Color(255, 255, 255));
+        bukuPanelItem.setPreferredSize(new Dimension(200, 300)); // Ukuran tetap untuk setiap buku
+
+        // Gambar sampul buku
+        ImageIcon imageIcon = new ImageIcon(buku.getGambarSampul());
+        Image image = imageIcon.getImage().getScaledInstance(150, 200, Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(image));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
+
+        // Panel teks (judul dan pengarang)
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setBackground(new Color(255, 255, 255));
+        textPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10)); // Padding untuk textPanel
+
+        // Margin antara gambar dan teks (judul)
+        textPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+
+        // Judul buku
+        JLabel titleLabel = new JLabel(buku.getJudul());
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Pengarang buku
+        JLabel authorLabel = new JLabel(buku.getPenulis());
+        authorLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        authorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        authorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        authorLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0)); // Tambahkan padding atas
+
+        textPanel.add(titleLabel);
+        textPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Tambahkan jarak antara judul dan pengarang
+        textPanel.add(authorLabel);
+
+        bukuPanelItem.add(textPanel, BorderLayout.SOUTH);
+
+        return bukuPanelItem;
     }
 
     public void refreshBukuList() {
