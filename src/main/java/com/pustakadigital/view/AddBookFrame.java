@@ -16,14 +16,18 @@ public class AddBookFrame extends JFrame {
     private JButton saveButton, uploadButton;
     private JLabel imagePathLabel;
     private BukuDAO bukuDAO;
+    private JFrame parentFrame;
+    private Runnable refreshCallback;
 
-    public AddBookFrame() {
+    public AddBookFrame(JFrame parentFrame, Runnable refreshCallback) {
         setTitle("Tambah Buku");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridBagLayout());
 
-        bukuDAO = new BukuDAO();
+        this.refreshCallback = refreshCallback;
+        this.bukuDAO = new BukuDAO();
+        this.parentFrame = parentFrame;
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -123,6 +127,12 @@ public class AddBookFrame extends JFrame {
             Buku buku = new Buku(0, judul, penulis, genre, tahun, gambarSampul);
             bukuDAO.addBuku(buku);
             JOptionPane.showMessageDialog(null, "Buku berhasil disimpan!");
+
+            // Refresh buku list in DashbordPenggunaFrame
+            if (parentFrame instanceof DashbordPenggunaFrame) {
+                ((DashbordPenggunaFrame) parentFrame).refreshBukuList();
+            }
+
             dispose();
         }
     }

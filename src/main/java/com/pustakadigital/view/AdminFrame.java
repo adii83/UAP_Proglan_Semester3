@@ -5,6 +5,9 @@ import com.pustakadigital.model.Buku;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
 import java.util.List;
 
 public class AdminFrame extends JFrame {
@@ -22,6 +25,16 @@ public class AdminFrame extends JFrame {
         bukuDAO = new BukuDAO();
         bukuListModel = new DefaultListModel<>();
         bukuList = new JList<>(bukuListModel);
+        bukuList.setCellRenderer(new BukuListCellRenderer());
+        bukuList.setFixedCellHeight(200);
+        bukuList.setFixedCellWidth(150);
+        bukuList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        bukuList.setVisibleRowCount(-1);
+        
+        JScrollPane scrollPane = new JScrollPane(bukuList);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
+
         loadBukuList("Semua");
 
         JLabel welcomeLabel = new JLabel("Welcome, Admin!", SwingConstants.CENTER);
@@ -43,10 +56,16 @@ public class AdminFrame extends JFrame {
         buttonPanel.add(logoutButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
-        add(new JScrollPane(bukuList), BorderLayout.CENTER);
+
+        // Initialize genreComboBox
+        genreComboBox = new JComboBox<>(new String[]{"Semua", "Fiksi", "Non-Fiksi", "Sejarah", "Sains"});
+        add(genreComboBox, BorderLayout.NORTH);
 
         // Action listeners
-        addBookButton.addActionListener(e -> new AddBookFrame().setVisible(true));
+        addBookButton.addActionListener(e -> {
+            AddBookFrame addBookFrame = new AddBookFrame(this, () -> loadBukuList("Semua"));
+            addBookFrame.setVisible(true);
+        });
         deleteBookButton.addActionListener(e -> deleteSelectedBook());
         logoutButton.addActionListener(e -> {
             new LoginFrame().setVisible(true);
@@ -74,6 +93,40 @@ public class AdminFrame extends JFrame {
             }
         } else {
             JOptionPane.showMessageDialog(this, "Pilih buku yang ingin dihapus.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private class BukuListCellRenderer extends JPanel implements ListCellRenderer<Buku> {
+        private JLabel imageLabel = new JLabel();
+        private JLabel titleLabel = new JLabel();
+
+        public BukuListCellRenderer() {
+            setLayout(new BorderLayout(5, 5));
+            setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+            
+            imageLabel.setPreferredSize(new Dimension(140, 160));
+            imageLabel.setHorizontalAlignment(JLabel.CENTER);
+            titleLabel.setHorizontalAlignment(JLabel.CENTER);
+            
+            add(imageLabel, BorderLayout.CENTER);
+            add(titleLabel, BorderLayout.SOUTH);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends Buku> list, 
+                Buku buku, int index, boolean isSelected, boolean cellHasFocus) {
+            
+            // Load and scale the book cover image
+            ImageIcon imageIcon = new ImageIcon(buku.getGambarSampul());
+            Image image = imageIcon.getImage().getScaledInstance(140, 160, Image.SCALE_SMOOTH);
+            imageLabel.setIcon(new ImageIcon(image));
+            
+            titleLabel.setText("<html><center>" + buku.getJudul() + "</center></html>");
+            
+            setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+            setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+            
+            return this;
         }
     }
 }

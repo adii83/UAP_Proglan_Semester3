@@ -19,6 +19,7 @@ public class BukuDAO {
             stmt.setInt(4, buku.getTahun());
             stmt.setString(5, buku.getGambarSampul());
             stmt.executeUpdate();
+            System.out.println("Buku berhasil ditambahkan: " + buku.getJudul());
         } catch (SQLException e) {
             System.out.println("Error adding book: " + e.getMessage());
             JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat menambahkan buku: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
