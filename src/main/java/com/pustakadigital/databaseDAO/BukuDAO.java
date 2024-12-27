@@ -2,7 +2,6 @@ package com.pustakadigital.databaseDAO;
 
 import com.pustakadigital.model.Buku;
 
-import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,44 +9,50 @@ import org.apache.log4j.Logger;
 
 public class BukuDAO {
     private static final Logger logger = Logger.getLogger(BukuDAO.class);
+    private Connection connection;
+
+    public BukuDAO() {
+        connection = Database.connect();
+        logger.info("Database connection established.");
+    }
 
     public void addBuku(Buku buku) {
         if (isIsbnExists(buku.getIsbn())) {
-            JOptionPane.showMessageDialog(null, "ISBN sudah ada!", "Error", JOptionPane.ERROR_MESSAGE);
-            logger.warn("Attempt to add a book with existing ISBN: " + buku.getIsbn());
-            return;
+            System.out.println("ISBN sudah ada! Buku tidak dapat ditambahkan.");
+            return; // Buku tidak ditambahkan jika ISBN sudah ada
         }
 
-        String query = "INSERT INTO buku (judul, penulis, genre, tahun, gambar_sampul, isbn) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, buku.getJudul());
-            stmt.setString(2, buku.getPenulis());
-            stmt.setString(3, buku.getGenre());
-            stmt.setInt(4, buku.getTahun());
-            stmt.setString(5, buku.getGambarSampul());
-            stmt.setString(6, buku.getIsbn());
-            stmt.executeUpdate();
-            logger.info("Buku berhasil ditambahkan: " + buku.getJudul());
-        } catch (SQLException e) {
-            logger.error("Error adding book: " + e.getMessage(), e);
-            JOptionPane.showMessageDialog(null, "Terjadi kesalahan saat menambahkan buku: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        String query = "INSERT INTO buku (isbn, judul, penulis, genre, tahun, gambar_sampul) VALUES (?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        stmt.setString(1, buku.getIsbn());
+        stmt.setString(2, buku.getJudul());
+        stmt.setString(3, buku.getPenulis());
+        stmt.setString(4, buku.getGenre());
+        stmt.setInt(5, buku.getTahun());
+        stmt.setString(6, buku.getGambarSampul());
+        
+        int result = stmt.executeUpdate();
+        if (result > 0) {
+            System.out.println("Buku berhasil ditambahkan!");
+        } else {
+            System.out.println("Gagal menambahkan buku!");
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
-    private boolean isIsbnExists(String isbn) {
+    public boolean isIsbnExists(String isbn) {
         String query = "SELECT COUNT(*) FROM buku WHERE isbn = ?";
-        try (Connection conn = Database.connect();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, isbn);
             ResultSet rs = stmt.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                return true;
-            }
+            rs.next();
+            return rs.getInt(1) > 0;
         } catch (SQLException e) {
-            System.out.println("Error checking ISBN: " + e.getMessage());
+            logger.error("Error checking ISBN existence", e);
+            return false;
         }
-        return false;
     }
 
     public List<Buku> getAllBuku() {
@@ -88,6 +93,29 @@ public class BukuDAO {
         } catch (SQLException e) {
             System.out.println("Error updating book: " + e.getMessage());
         }
+    }
+
+    public Buku getBukuByISBN(String isbn) {
+        Buku buku = null;
+        String sql = "SELECT * FROM buku WHERE isbn = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, isbn);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                buku = new Buku(
+                    resultSet.getString("judul"),
+                    resultSet.getString("penulis"),
+                    resultSet.getString("genre"),
+                    resultSet.getString("gambar_sampul"),
+                    resultSet.getString("isbn")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return buku;
     }
 
     public void deleteBuku(int id) {

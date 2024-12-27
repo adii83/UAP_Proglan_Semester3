@@ -1,18 +1,21 @@
 package com.pustakadigital.view;
+
 import com.pustakadigital.api.OpenLibraryAPI;
 import com.pustakadigital.databaseDAO.BukuDAO;
 import com.pustakadigital.model.Buku;
 import com.formdev.flatlaf.FlatDarkLaf;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DashbordPenggunaFrame extends JFrame {
     private JPanel bookPanel;
@@ -23,6 +26,8 @@ public class DashbordPenggunaFrame extends JFrame {
     private List<Buku> bukuListData;
     private int currentBookIndex = 0; // Untuk melacak buku yang sudah dimuat
     private static final int BOOKS_PER_PAGE = 10; // Jumlah buku per halaman
+
+    private JTextField isbnField; // Tambahkan field untuk ISBN
 
     public DashbordPenggunaFrame(String username) {
         setTitle("Pustaka Digital");
@@ -77,6 +82,16 @@ public class DashbordPenggunaFrame extends JFrame {
         filterPanel.add(searchField);
         filterPanel.add(new JLabel("Genre:"));
         filterPanel.add(genreFilterComboBox);
+
+        // Tambahkan input field untuk ISBN
+        isbnField = new JTextField(20);
+        isbnField.setFont(new Font("Arial", Font.PLAIN, 14));
+
+        filterPanel.add(new JLabel("ISBN:"));
+        filterPanel.add(isbnField);
+
+        // Event listener untuk pencarian berdasarkan ISBN
+        isbnField.addActionListener(e -> loadBookByISBN());
 
         // Tambahkan panel filter ke layout utama
         gbc.gridx = 0;
@@ -152,6 +167,7 @@ public class DashbordPenggunaFrame extends JFrame {
 
         bookPanel.revalidate();
         bookPanel.repaint();
+        System.out.println("Books loaded into panel."); // Debugging
     }
 
     private void addPlaceholders(int placeholders) {
@@ -170,11 +186,26 @@ public class DashbordPenggunaFrame extends JFrame {
         bukuPanelItem.setPreferredSize(new Dimension(200, 300));
 
         // Gambar sampul buku
-        ImageIcon imageIcon = new ImageIcon(buku.getGambarSampul());
-        Image image = imageIcon.getImage().getScaledInstance(150, 200, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(image));
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
+        String coverUrl = buku.getGambarSampul();
+        if (coverUrl != null && !coverUrl.isEmpty()) {
+            try {
+                ImageIcon imageIcon;
+                if (isFromISBN(buku)) {
+                    URL url = new URI(coverUrl).toURL(); // Convert URI to URL
+                    imageIcon = new ImageIcon(url); // Dari URL
+                } else {
+                    imageIcon = new ImageIcon(coverUrl); // Dari path lokal
+                }
+                Image image = imageIcon.getImage().getScaledInstance(150, 200, Image.SCALE_SMOOTH);
+                JLabel imageLabel = new JLabel(new ImageIcon(image));
+                imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
+            } catch (IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Cover URL is empty or null."); // Debugging
+        }
 
         // Panel teks (judul dan pengarang)
         JPanel textPanel = new JPanel();
@@ -201,52 +232,71 @@ public class DashbordPenggunaFrame extends JFrame {
 
         bukuPanelItem.add(textPanel, BorderLayout.SOUTH);
 
-        // Tambahkan MouseListener untuk membuka detail buku
         bukuPanelItem.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                showBookDetails(buku);
+                try {
+                    openBookDetailPage(buku);
+                } catch (MalformedURLException | URISyntaxException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
         return bukuPanelItem;
     }
 
-    public void refreshBukuList() {
-        loadBooks(); // Assuming loadBooks() refreshes the book list
+    private boolean isFromISBN(Buku buku) {
+        // Logika untuk menentukan apakah buku berasal dari ISBN
+        // Misalnya, cek apakah ISBN ada atau berdasarkan sumber data
+        return buku.getIsbn() != null && !buku.getIsbn().isEmpty();
     }
 
-    private void showBookDetails(Buku buku) {
-        String isbn = buku.getIsbn(); // Gunakan ISBN dari objek Buku
-
-        OpenLibraryAPI openLibraryAPI = new OpenLibraryAPI();
-        JSONObject bookInfo = openLibraryAPI.getBookInfoByISBN(isbn);
-
-        if (bookInfo != null) {
-            String title = bookInfo.optString("title", "Judul tidak tersedia");
-            String authors = bookInfo.optJSONArray("authors").toString();
-            String description = bookInfo.optString("description", "Deskripsi tidak tersedia");
-            String coverUrl = bookInfo.optJSONObject("cover").optString("large", ""); // URL sampul besar
-
-            // Tampilkan detail buku dalam dialog
-            JOptionPane.showMessageDialog(this,
-                    "Judul: " + title + "\nPenulis: " + authors + "\nDeskripsi: " + description,
-                    "Detail Buku", JOptionPane.INFORMATION_MESSAGE);
-
-            // Jika Anda ingin menampilkan sampul, Anda bisa menggunakan JLabel dengan ImageIcon
-            if (!coverUrl.isEmpty()) {
-                try {
-                    URL url = new URI(coverUrl).toURL();
-                    ImageIcon coverImage = new ImageIcon(url);
-                    JLabel coverLabel = new JLabel(coverImage);
-                    JOptionPane.showMessageDialog(this, coverLabel, "Sampul Buku", JOptionPane.PLAIN_MESSAGE);
-                } catch (MalformedURLException | URISyntaxException e) {
-                    e.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "URL sampul tidak valid.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Tidak ada detail yang ditemukan untuk buku ini.", "Error", JOptionPane.ERROR_MESSAGE);
+    private void openBookDetailPage(Buku buku) throws MalformedURLException, URISyntaxException {
+        OpenLibraryAPI api = new OpenLibraryAPI();
+        String bookISBN = buku.getIsbn();
+        JSONObject bookDetails = api.getBookInfoByISBN(bookISBN);
+        
+        // Redirect to the book's Open Library page (can be modified to show in the app's detail page)
+        try {
+            String openLibraryUrl = bookDetails.getString("url");
+            Desktop.getDesktop().browse(new URI(openLibraryUrl));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error opening URL.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    // Fungsi untuk mencari buku berdasarkan ISBN
+    private void loadBookByISBN() {
+        String isbn = isbnField.getText();
+        Buku buku = bukuDAO.getBukuByISBN(isbn);
+
+        if (buku != null) {
+            // Format authors if needed
+            JSONArray authorsArray = new JSONArray(buku.getPenulis());
+            String authors = formatAuthors(authorsArray);
+            buku.setPenulis(authors);
+
+            bukuListData.add(buku);
+            currentBookIndex = 0;
+            bookPanel.removeAll();
+            loadMoreBooks();
+        } else {
+            JOptionPane.showMessageDialog(this, "Buku tidak ditemukan!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private String formatAuthors(JSONArray authorsArray) {
+        if (authorsArray == null) return "Penulis tidak tersedia";
+        StringBuilder authors = new StringBuilder();
+        for (int i = 0; i < authorsArray.length(); i++) {
+            JSONObject author = authorsArray.getJSONObject(i);
+            if (i > 0) {
+                authors.append(", ");
+            }
+            authors.append(author.getString("name"));
+        }
+        return authors.toString();
     }
 
     public static void main(String[] args) {

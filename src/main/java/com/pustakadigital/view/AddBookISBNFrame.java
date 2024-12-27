@@ -3,6 +3,7 @@ package com.pustakadigital.view;
 import com.pustakadigital.model.Buku;
 import com.pustakadigital.databaseDAO.BukuDAO;
 import com.pustakadigital.api.OpenLibraryAPI;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -17,6 +18,7 @@ public class AddBookISBNFrame extends JFrame {
     private BukuDAO bukuDAO;
     private JFrame parentFrame;
     private Runnable refreshCallback;
+    private JComboBox<String> genreComboBox;
 
     public AddBookISBNFrame(JFrame parentFrame, Runnable refreshCallback) {
         setTitle("Tambah Buku dengan ISBN");
@@ -37,6 +39,7 @@ public class AddBookISBNFrame extends JFrame {
         gbc.gridy = 0;
         add(new JLabel("ISBN:"), gbc);
         isbnField = new JTextField();
+        isbnField.setPreferredSize(new Dimension(200, 25));
         gbc.gridx = 1;
         add(isbnField, gbc);
 
@@ -60,7 +63,10 @@ public class AddBookISBNFrame extends JFrame {
         gbc.gridy = 3;
         add(penulisLabel, gbc);
         gbc.gridy = 4;
-        add(genreLabel, gbc);
+        add(new JLabel("Genre:"), gbc);
+        genreComboBox = new JComboBox<>(new String[]{"Fiksi", "Non-Fiksi", "Sejarah", "Sains", "Lainnya"});
+        gbc.gridx = 1;
+        add(genreComboBox, gbc);
         gbc.gridy = 5;
         add(coverLabel, gbc);
 
@@ -92,9 +98,12 @@ public class AddBookISBNFrame extends JFrame {
 
         if (bookInfo != null) {
             String title = bookInfo.optString("title", "Judul tidak tersedia");
-            String authors = bookInfo.optJSONArray("authors").toString();
+            JSONArray authorsArray = bookInfo.optJSONArray("authors");
+            String authors = formatAuthors(authorsArray);
             String coverUrl = bookInfo.optJSONObject("cover").optString("large", "");
-            String genre = bookInfo.optString("subjects", "Genre tidak tersedia");
+            
+            // Cek genre dari API
+            String genre = bookInfo.optJSONArray("subjects") != null ? bookInfo.optJSONArray("subjects").toString() : (String) genreComboBox.getSelectedItem();
 
             judulLabel.setText("Judul: " + title);
             penulisLabel.setText("Penulis: " + authors);
@@ -103,6 +112,19 @@ public class AddBookISBNFrame extends JFrame {
         } else {
             JOptionPane.showMessageDialog(null, "Tidak ada data yang ditemukan untuk ISBN ini.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private String formatAuthors(JSONArray authorsArray) {
+        if (authorsArray == null) return "Penulis tidak tersedia";
+        StringBuilder authors = new StringBuilder();
+        for (int i = 0; i < authorsArray.length(); i++) {
+            JSONObject author = authorsArray.getJSONObject(i);
+            if (i > 0) {
+                authors.append(", ");
+            }
+            authors.append(author.getString("name"));
+        }
+        return authors.toString();
     }
 
     private class SaveButtonListener implements ActionListener {

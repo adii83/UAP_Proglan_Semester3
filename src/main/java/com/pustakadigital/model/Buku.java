@@ -25,6 +25,15 @@ public class Buku {
         this.isbn = isbn;
     }
 
+    // Constructor baru
+    public Buku(String judul, String penulis, String genre, String gambarSampul, String isbn) {
+        this.judul = judul;
+        this.penulis = penulis;
+        this.genre = genre;
+        this.gambarSampul = gambarSampul;
+        this.isbn = isbn;
+    }
+
     // Getter dan Setter untuk id
     public int getId() {
         return id;
