@@ -104,17 +104,17 @@ public class RegisterFrame extends JFrame {
             String password = new String(passwordField.getPassword());
 
             if (username.isEmpty() || password.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Username and password must not be empty!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Nama pengguna dan kata sandi tidak boleh kosong!", "Validation Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (!isValidPassword(password)) {
-                JOptionPane.showMessageDialog(null, "Password must contain at least one uppercase letter, one digit, and one special character!", "Validation Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Kata sandi harus mengandung setidaknya satu huruf kapital, satu digit, dan satu karakter khusus!", "Validation Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             userDAO.register(username, password, "user");
-            JOptionPane.showMessageDialog(null, "Registration successful! You can now log in.");
+            JOptionPane.showMessageDialog(null, "Registrasi berhasil! Login sekarang");
             new LoginFrame().setVisible(true);
             dispose();
         }

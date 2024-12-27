@@ -89,4 +89,17 @@ public class Buku {
     public String getIsbn() {
         return isbn;
     }
+
+    @Override
+    public String toString() {
+        return "Buku{" +
+                "id=" + id +
+                ", judul='" + judul + '\'' +
+                ", penulis='" + penulis + '\'' +
+                ", genre='" + genre + '\'' +
+                ", tahun=" + tahun +
+                ", gambarSampul='" + gambarSampul + '\'' +
+                ", isbn='" + isbn + '\'' +
+                '}';
+    }
 }

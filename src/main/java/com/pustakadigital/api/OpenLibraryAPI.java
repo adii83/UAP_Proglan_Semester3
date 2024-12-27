@@ -20,14 +20,21 @@ public class OpenLibraryAPI {
             HttpGet request = new HttpGet(url);
             try (CloseableHttpResponse response = httpClient.execute(request)) {
                 String jsonResponse = EntityUtils.toString(response.getEntity());
-                JSONObject jsonObject = new JSONObject(jsonResponse);
-                return jsonObject.optJSONObject("ISBN:" + isbn);
-            } catch (ParseException e) {
-                e.printStackTrace();
+
+                // Cek jika respons kosong
+                if (jsonResponse == null || jsonResponse.isEmpty()) {
+                    System.err.println("API returned an empty response for ISBN: " + isbn);
+                    return null;
+                }
+
+                // Parsing JSON
+                return new JSONObject(jsonResponse);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException | ParseException e) {
+            System.err.println("Error fetching book data for ISBN: " + isbn + ". Error: " + e.getMessage());
+            return null; // Tetap kembalikan null untuk kompatibilitas kode lama
         }
-        return null;
     }
+
+
 }
