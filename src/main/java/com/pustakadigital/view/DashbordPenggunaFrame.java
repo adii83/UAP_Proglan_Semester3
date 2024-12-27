@@ -42,14 +42,14 @@ public class DashbordPenggunaFrame extends JFrame {
 
         bukuDAO = new BukuDAO();
 
-        // Set theme
+
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
 
-        // Panel Utama dengan GridBagLayout
+
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(new Color(50, 50, 50));
         add(mainPanel);
@@ -58,7 +58,7 @@ public class DashbordPenggunaFrame extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5); // Margin antar elemen
         gbc.fill = GridBagConstraints.BOTH;
 
-        // Panel Selamat Datang
+
         JPanel welcomePanel = new JPanel(new BorderLayout());
         welcomePanel.setBackground(new Color(0, 0, 0));
         JLabel welcomeLabel = new JLabel("Selamat datang, " + username + "!", SwingConstants.CENTER);
@@ -66,14 +66,14 @@ public class DashbordPenggunaFrame extends JFrame {
         welcomeLabel.setForeground(Color.WHITE);
         welcomePanel.add(welcomeLabel, BorderLayout.CENTER);
 
-        // Tambahkan panel selamat datang ke layout utama
+
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 1; // Mengisi penuh secara horizontal
-        gbc.weighty = 0; // Tidak mengambil ruang tambahan vertikal
+        gbc.weightx = 1;
+        gbc.weighty = 0;
         mainPanel.add(welcomePanel, gbc);
 
-        // Panel untuk filter dan pencarian
+
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         filterPanel.setBackground(new Color(50, 50, 50));
         filterPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Padding lebih kecil
@@ -88,28 +88,28 @@ public class DashbordPenggunaFrame extends JFrame {
         filterPanel.add(new JLabel("Genre:"));
         filterPanel.add(genreFilterComboBox);
 
-        // Tambahkan input field untuk ISBN
+
         isbnField = new JTextField(20);
         isbnField.setFont(new Font("Arial", Font.PLAIN, 14));
 
         filterPanel.add(new JLabel("ISBN:"));
         filterPanel.add(isbnField);
 
-        // Event listener untuk pencarian berdasarkan ISBN
+
         isbnField.addActionListener(e -> loadBookByISBN());
 
-        // Tambahkan panel filter ke layout utama
+
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.weightx = 1; // Mengisi penuh secara horizontal
         gbc.weighty = 0; // Tidak mengambil ruang tambahan vertikal
         mainPanel.add(filterPanel, gbc);
 
-        // Panel untuk buku lainnya
+
         JPanel outerBookPanel = new JPanel(new BorderLayout());
         outerBookPanel.setBackground(new Color(245, 245, 245));
 
-        // Gunakan GridLayout dengan 4 kolom tetap
+
         bookPanel = new JPanel(new GridLayout(0, 4, 20, 20)); // 0 baris dan 4 kolom dengan jarak antar elemen
         bookPanel.setBackground(new Color(245, 245, 245));
         bookPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Margin antar panel buku
@@ -121,23 +121,23 @@ public class DashbordPenggunaFrame extends JFrame {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Smooth scrolling
         outerBookPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Tambahkan panel buku ke layout utama
+
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.weightx = 1; // Mengisi penuh secara horizontal
-        gbc.weighty = 1; // Mengambil semua sisa ruang vertikal
+        gbc.weightx = 1;
+        gbc.weighty = 1;
         mainPanel.add(outerBookPanel, gbc);
 
-        // Event listener untuk pencarian dan filter
+
         searchField.addActionListener(e -> loadBooks());
         genreFilterComboBox.addActionListener(e -> loadBooks());
 
-        // Load initial books
+
         loadBooks();
     }
 
     private void loadBooks() {
-        // Mengambil daftar buku sesuai pencarian dan filter
+
         String searchQuery = searchField.getText().toLowerCase();
         String selectedGenre = (String) genreFilterComboBox.getSelectedItem();
 
@@ -146,39 +146,39 @@ public class DashbordPenggunaFrame extends JFrame {
                 .filter(buku -> selectedGenre.equals("Semua") || buku.getGenre().equalsIgnoreCase(selectedGenre))
                 .collect(Collectors.toList());
 
-        // Reset index dan panel
+
         currentBookIndex = 0;
         bookPanel.removeAll();
         loadMoreBooks();
     }
 
     private void loadMoreBooks() {
-        // Ambil buku yang sesuai dengan halaman saat ini
+
         int endIndex = Math.min(currentBookIndex + BOOKS_PER_PAGE, bukuListData.size());
         List<Buku> booksToDisplay = bukuListData.subList(currentBookIndex, endIndex);
 
         for (Buku buku : booksToDisplay) {
-            bookPanel.add(createBookPanel(buku)); // Tambahkan buku ke panel
+            bookPanel.add(createBookPanel(buku));
         }
 
-        // Tambahkan placeholder jika jumlah buku kurang dari 4
+
         int remainingSlots = 4 - (booksToDisplay.size() % 4);
-        if (remainingSlots != 4) { // Hanya tambahkan placeholder jika diperlukan
+        if (remainingSlots != 4) {
             addPlaceholders(remainingSlots);
         }
 
-        // Update currentBookIndex untuk halaman berikutnya
+
         currentBookIndex = endIndex;
 
         bookPanel.revalidate();
         bookPanel.repaint();
-        System.out.println("Books loaded into panel."); // Debugging
+        System.out.println("Books loaded into panel.");
     }
 
     private void addPlaceholders(int placeholders) {
         for (int i = 0; i < placeholders; i++) {
             JPanel placeholder = new JPanel();
-            placeholder.setBackground(new Color(245, 245, 245)); // Warna latar belakang placeholder sama dengan bookPanel
+            placeholder.setBackground(new Color(245, 245, 245));
             bookPanel.add(placeholder);
         }
     }
@@ -190,9 +190,9 @@ public class DashbordPenggunaFrame extends JFrame {
         bukuPanelItem.setBackground(new Color(255, 255, 255));
         bukuPanelItem.setPreferredSize(new Dimension(200, 300));
 
-        // Gambar sampul buku
+
         String coverUrl = buku.getGambarSampul();
-        System.out.println("Fetching image from URL: " + coverUrl); // Debugging
+        System.out.println("Fetching image from URL: " + coverUrl);
 
         BufferedImage image = null;
         try {
@@ -211,7 +211,7 @@ public class DashbordPenggunaFrame extends JFrame {
             }
 
             if (image == null) {
-                // Use a default image if the image is null
+
                 InputStream defaultImageStream = getClass().getResourceAsStream("/images/default.png");
                 if (defaultImageStream != null) {
                     image = ImageIO.read(defaultImageStream);
@@ -237,7 +237,7 @@ public class DashbordPenggunaFrame extends JFrame {
             bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
         }
 
-        // Panel teks (judul dan pengarang)
+
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
         textPanel.setBackground(new Color(255, 255, 255));
@@ -276,8 +276,7 @@ public class DashbordPenggunaFrame extends JFrame {
     }
 
     private boolean isFromISBN(Buku buku) {
-        // Logika untuk menentukan apakah buku berasal dari ISBN
-        // Misalnya, cek apakah ISBN ada atau berdasarkan sumber data
+
         return buku.getIsbn() != null && !buku.getIsbn().isEmpty();
     }
 
@@ -286,7 +285,6 @@ public class DashbordPenggunaFrame extends JFrame {
         String bookISBN = buku.getIsbn();
         JSONObject bookDetails = api.getBookInfoByISBN(bookISBN);
         
-        // Redirect to the book's Open Library page (can be modified to show in the app's detail page)
         try {
             String openLibraryUrl = bookDetails.getString("url");
             Desktop.getDesktop().browse(new URI(openLibraryUrl));
@@ -296,7 +294,7 @@ public class DashbordPenggunaFrame extends JFrame {
         }
     }
 
-    // Fungsi untuk mencari buku berdasarkan ISBN
+
     private void loadBookByISBN() {
         String isbn = isbnField.getText();
         Buku buku = bukuDAO.getBukuByISBN(isbn);

@@ -31,7 +31,7 @@ public class AddBookManualFrame extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Field input
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         add(new JLabel("Judul:"), gbc);
@@ -73,7 +73,7 @@ public class AddBookManualFrame extends JFrame {
         gbc.gridx = 1;
         add(imagePathLabel, gbc);
 
-        // Save Button
+
         saveButton = new JButton("Simpan");
         saveButton.addActionListener(new SaveButtonListener());
         gbc.gridy = 7;
@@ -102,7 +102,7 @@ public class AddBookManualFrame extends JFrame {
             String genre = (String) genreComboBox.getSelectedItem();
             String tahunText = tahunField.getText();
 
-            // Validasi input
+
             if (judul.isEmpty() || penulis.isEmpty() || genre.isEmpty() || tahunText.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Semua field harus diisi!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -130,12 +130,12 @@ public class AddBookManualFrame extends JFrame {
             bukuDAO.addBuku(buku);
             JOptionPane.showMessageDialog(null, "Buku berhasil disimpan!");
 
-            // Refresh buku list in AdminFrame
+
             if (parentFrame instanceof AdminFrame) {
                 ((AdminFrame) parentFrame).loadBukuList("Semua");
             }
 
-            // Panggil refreshCallback jika tidak null
+
             if (refreshCallback != null) {
                 refreshCallback.run();
             }

@@ -42,7 +42,6 @@ public class AdminFrame extends JFrame {
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         add(welcomeLabel, BorderLayout.NORTH);
 
-        // Panel untuk tombol fitur
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
@@ -60,17 +59,16 @@ public class AdminFrame extends JFrame {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Initialize genreComboBox
         genreComboBox = new JComboBox<>(new String[]{"Semua", "Fiksi", "Non-Fiksi", "Sejarah", "Sains"});
         add(genreComboBox, BorderLayout.NORTH);
 
-        // Tambahkan ActionListener ke genreComboBox
+    
         genreComboBox.addActionListener(e -> {
             String selectedGenre = (String) genreComboBox.getSelectedItem();
             loadBukuList(selectedGenre);
         });
 
-        // Action listeners
+      
         addBookManualButton.addActionListener(e -> {
             AddBookManualFrame addBookManualFrame = new AddBookManualFrame(this, () -> loadBukuList("Semua"));
             addBookManualFrame.setVisible(true);
@@ -151,7 +149,6 @@ public class AdminFrame extends JFrame {
         public Component getListCellRendererComponent(JList<? extends Buku> list, 
                 Buku buku, int index, boolean isSelected, boolean cellHasFocus) {
             
-            // Load and scale the book cover image
             String coverUrl = buku.getGambarSampul();
             System.out.println("Fetching image from URL: " + coverUrl); // Debugging
 
@@ -159,11 +156,10 @@ public class AdminFrame extends JFrame {
                 BufferedImage image = null;
                 if (coverUrl != null && !coverUrl.isEmpty()) {
                     if (coverUrl.startsWith("http://") || coverUrl.startsWith("https://")) {
-                        // Load image from URL
                         URL url = new URL(coverUrl);
                         image = ImageIO.read(url);
                     } else {
-                        // Load image from local file
+                    
                         File file = new File(coverUrl);
                         if (file.exists()) {
                             image = ImageIO.read(file);
@@ -172,7 +168,7 @@ public class AdminFrame extends JFrame {
                 }
 
                 if (image == null) {
-                    // Use a default image if the image is null
+               
                     InputStream defaultImageStream = getClass().getResourceAsStream("/images/default.png");
                     if (defaultImageStream != null) {
                         image = ImageIO.read(defaultImageStream);

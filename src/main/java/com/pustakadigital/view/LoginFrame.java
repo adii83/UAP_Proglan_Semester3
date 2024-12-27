@@ -20,11 +20,11 @@ public class LoginFrame extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new GridLayout(1, 2));
 
-        // Panel untuk Sign In
+
         JPanel signInPanel = createSignInPanel();
         signInPanel.setBackground(new Color(0, 128, 0));
 
-        // Panel untuk Sign Up
+
         JPanel signUpPanel = createSignUpPanel();
         signUpPanel.setBackground(Color.WHITE);
 

@@ -5,14 +5,14 @@ public class User {
     private String username;
     private String password;
 
-    // Constructor
+
     public User(int id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
     }
 
-    // Getter dan Setter untuk id
+
     public int getId() {
         return id;
     }
@@ -21,7 +21,6 @@ public class User {
         this.id = id;
     }
 
-    // Getter dan Setter untuk username
     public String getUsername() {
         return username;
     }
@@ -30,11 +29,11 @@ public class User {
         this.username = username;
     }
 
-    // Getter dan Setter untuk password
+
     public String getPassword() {
         return password;
     }
-    //
+
     public void setPassword(String password) {
         this.password = password;
     }

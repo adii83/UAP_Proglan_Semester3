@@ -9,12 +9,12 @@ public class Buku {
     private String gambarSampul;
     private String isbn;
 
-    // Constructor for AddBookManualFrame
+
     public Buku(int id, String judul, String penulis, String genre, int tahun, String gambarSampul) {
         this(id, judul, penulis, genre, tahun, gambarSampul, null);
     }
 
-    // Constructor for AddBookISBNFrame
+
     public Buku(int id, String judul, String penulis, String genre, int tahun, String gambarSampul, String isbn) {
         this.id = id;
         this.judul = judul;
@@ -25,7 +25,7 @@ public class Buku {
         this.isbn = isbn;
     }
 
-    // Constructor baru
+
     public Buku(String judul, String penulis, String genre, String gambarSampul, String isbn) {
         this.judul = judul;
         this.penulis = penulis;
@@ -34,7 +34,7 @@ public class Buku {
         this.isbn = isbn;
     }
 
-    // Getter dan Setter untuk id
+
     public int getId() {
         return id;
     }
@@ -43,7 +43,6 @@ public class Buku {
         this.id = id;
     }
 
-    // Getter dan Setter untuk judul
     public String getJudul() {
         return judul;
     }
@@ -52,7 +51,7 @@ public class Buku {
         this.judul = judul;
     }
 
-    // Getter dan Setter untuk penulis
+
     public String getPenulis() {
         return penulis;
     }
@@ -61,7 +60,6 @@ public class Buku {
         this.penulis = penulis;
     }
 
-    // Getter dan Setter untuk genre
     public String getGenre() {
         return genre;
     }
@@ -70,7 +68,7 @@ public class Buku {
         this.genre = genre;
     }
 
-    // Getter dan Setter untuk tahun
+
     public int getTahun() {
         return tahun;
     }
@@ -79,7 +77,7 @@ public class Buku {
         this.tahun = tahun;
     }
 
-    // Getter dan Setter untuk gambarSampul
+
     public String getGambarSampul() {
         return gambarSampul;
     }

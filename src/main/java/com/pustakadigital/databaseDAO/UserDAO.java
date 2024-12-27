@@ -20,13 +20,13 @@ public class UserDAO {
             stmt.setString(2, password);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getString("role"); // Mengembalikan peran pengguna
+                return rs.getString("role");
             }
         } catch (SQLException e) {
             System.out.println("Error logging in: " + e.getMessage());
             JOptionPane.showMessageDialog(null, "Error logging in: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
-        return null; // Jika gagal login
+        return null;
     }
 
     public void register(String username, String password, String role) {
@@ -37,7 +37,6 @@ public class UserDAO {
              PreparedStatement checkStmt = conn.prepareStatement(checkQuery);
              PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
 
-            // Periksa apakah username sudah ada
             checkStmt.setString(1, username);
             ResultSet rs = checkStmt.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
@@ -45,7 +44,6 @@ public class UserDAO {
                 return;
             }
 
-            // Tambahkan pengguna baru //
             insertStmt.setString(1, username);
             insertStmt.setString(2, password);
             insertStmt.setString(3, role);

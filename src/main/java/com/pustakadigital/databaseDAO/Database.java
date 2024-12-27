@@ -30,8 +30,7 @@ public class Database {
             }
         } catch (SQLException e) {
             System.out.println("Error closing database: " + e.getMessage());
-            // Optional: Show a dialog to the user
-            // JOptionPane.showMessageDialog(null, "Error closing database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+
         }
     }
 }

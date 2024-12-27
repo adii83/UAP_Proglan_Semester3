@@ -34,7 +34,7 @@ public class AddBookISBNFrame extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // ISBN
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         add(new JLabel("ISBN:"), gbc);
@@ -43,7 +43,6 @@ public class AddBookISBNFrame extends JFrame {
         gbc.gridx = 1;
         add(isbnField, gbc);
 
-        // Tombol Ambil Data
         fetchButton = new JButton("Ambil Data");
         fetchButton.addActionListener(new FetchButtonListener());
         gbc.gridy = 1;
@@ -51,7 +50,7 @@ public class AddBookISBNFrame extends JFrame {
         gbc.gridwidth = 2;
         add(fetchButton, gbc);
 
-        // Labels for displaying fetched data
+
         judulLabel = new JLabel("Judul: ");
         penulisLabel = new JLabel("Penulis: ");
         genreLabel = new JLabel("Genre: ");
@@ -70,7 +69,7 @@ public class AddBookISBNFrame extends JFrame {
         gbc.gridy = 5;
         add(coverLabel, gbc);
 
-        // Save Button
+
         saveButton = new JButton("Simpan");
         saveButton.addActionListener(new SaveButtonListener());
         gbc.gridy = 6;
@@ -102,7 +101,6 @@ public class AddBookISBNFrame extends JFrame {
             String authors = formatAuthors(authorsArray);
             String coverUrl = bookInfo.optJSONObject("cover").optString("large", "");
 
-            // Check if genre is available from API
             JSONArray subjectsArray = bookInfo.optJSONArray("subjects");
             String genre = (subjectsArray != null && subjectsArray.length() > 0) ? subjectsArray.getJSONObject(0).getString("name") : (String) genreComboBox.getSelectedItem();
 
@@ -137,7 +135,7 @@ public class AddBookISBNFrame extends JFrame {
                 return;
             }
 
-            // Assuming the data is already fetched and displayed
+
             String judul = judulLabel.getText().replace("Judul: ", "");
             String penulis = penulisLabel.getText().replace("Penulis: ", "");
             String genre = (String) genreComboBox.getSelectedItem();
@@ -147,12 +145,12 @@ public class AddBookISBNFrame extends JFrame {
             bukuDAO.addBuku(buku);
             JOptionPane.showMessageDialog(null, "Buku berhasil disimpan!");
 
-            // Refresh buku list in AdminFrame
+
             if (parentFrame instanceof AdminFrame) {
                 ((AdminFrame) parentFrame).loadBukuList("Semua");
             }
 
-            // Panggil refreshCallback jika tidak null
+
             if (refreshCallback != null) {
                 refreshCallback.run();
             }
