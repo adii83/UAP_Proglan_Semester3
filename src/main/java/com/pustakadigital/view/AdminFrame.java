@@ -2,9 +2,13 @@ package com.pustakadigital.view;
 
 import com.pustakadigital.databaseDAO.BukuDAO;
 import com.pustakadigital.model.Buku;
-
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 public class AdminFrame extends JFrame {
@@ -82,16 +86,36 @@ public class AdminFrame extends JFrame {
             new LoginFrame().setVisible(true);
             dispose();
         });
+
+        manageUsersButton.addActionListener(e -> {
+            ManageUserFrame manageUserFrame = new ManageUserFrame();
+            manageUserFrame.setVisible(true);
+        });
     }
 
     public void loadBukuList(String genre) {
-        List<Buku> bukuListData = bukuDAO.getAllBuku();
-        bukuListModel.clear();
-        for (Buku buku : bukuListData) {
-            if (genre.equals("Semua") || buku.getGenre().equalsIgnoreCase(genre)) {
-                bukuListModel.addElement(buku);
+        SwingWorker<List<Buku>, Void> worker = new SwingWorker<List<Buku>, Void>() {
+            @Override
+            protected List<Buku> doInBackground() throws Exception {
+                return bukuDAO.getAllBuku();
             }
-        }
+
+            @Override
+            protected void done() {
+                try {
+                    List<Buku> bukuListData = get();
+                    bukuListModel.clear();
+                    for (Buku buku : bukuListData) {
+                        if (genre.equals("Semua") || buku.getGenre().equalsIgnoreCase(genre)) {
+                            bukuListModel.addElement(buku);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        worker.execute();
     }
 
     private void deleteSelectedBook() {
@@ -128,10 +152,46 @@ public class AdminFrame extends JFrame {
                 Buku buku, int index, boolean isSelected, boolean cellHasFocus) {
             
             // Load and scale the book cover image
-            ImageIcon imageIcon = new ImageIcon(buku.getGambarSampul());
-            Image image = imageIcon.getImage().getScaledInstance(140, 160, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(image));
-            
+            String coverUrl = buku.getGambarSampul();
+            System.out.println("Fetching image from URL: " + coverUrl); // Debugging
+
+            try {
+                BufferedImage image = null;
+                if (coverUrl != null && !coverUrl.isEmpty()) {
+                    if (coverUrl.startsWith("http://") || coverUrl.startsWith("https://")) {
+                        // Load image from URL
+                        URL url = new URL(coverUrl);
+                        image = ImageIO.read(url);
+                    } else {
+                        // Load image from local file
+                        File file = new File(coverUrl);
+                        if (file.exists()) {
+                            image = ImageIO.read(file);
+                        }
+                    }
+                }
+
+                if (image == null) {
+                    // Use a default image if the image is null
+                    InputStream defaultImageStream = getClass().getResourceAsStream("/images/default.png");
+                    if (defaultImageStream != null) {
+                        image = ImageIO.read(defaultImageStream);
+                    } else {
+                        System.out.println("Default image not found.");
+                    }
+                }
+
+                if (image != null) {
+                    Image scaledImage = image.getScaledInstance(140, 160, Image.SCALE_SMOOTH);
+                    imageLabel.setIcon(new ImageIcon(scaledImage));
+                } else {
+                    imageLabel.setText("Image not available");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                imageLabel.setText("Error loading image");
+            }
+
             titleLabel.setText("<html><center>" + buku.getJudul() + "</center></html>");
             
             setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
@@ -140,6 +200,7 @@ public class AdminFrame extends JFrame {
             return this;
         }
     }
+    
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

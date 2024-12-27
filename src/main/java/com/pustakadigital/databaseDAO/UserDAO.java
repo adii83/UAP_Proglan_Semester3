@@ -5,6 +5,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import com.pustakadigital.model.User;
 
 public class UserDAO {
 
@@ -51,5 +55,36 @@ public class UserDAO {
             System.out.println("Error registering user: " + e.getMessage());
             JOptionPane.showMessageDialog(null, "Error registering user: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public void deleteUser(int userId) {
+        String query = "DELETE FROM users WHERE id = ?";
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error deleting user: " + e.getMessage());
+        }
+    }
+
+    public List<User> getAllUsers() {
+        List<User> userList = new ArrayList<>();
+        String query = "SELECT * FROM users";
+        try (Connection conn = Database.connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                User user = new User(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("password")
+                );
+                userList.add(user);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching users: " + e.getMessage());
+        }
+        return userList;
     }
 }

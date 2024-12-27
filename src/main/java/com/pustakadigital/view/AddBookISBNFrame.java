@@ -101,9 +101,10 @@ public class AddBookISBNFrame extends JFrame {
             JSONArray authorsArray = bookInfo.optJSONArray("authors");
             String authors = formatAuthors(authorsArray);
             String coverUrl = bookInfo.optJSONObject("cover").optString("large", "");
-            
-            // Cek genre dari API
-            String genre = bookInfo.optJSONArray("subjects") != null ? bookInfo.optJSONArray("subjects").toString() : (String) genreComboBox.getSelectedItem();
+
+            // Check if genre is available from API
+            JSONArray subjectsArray = bookInfo.optJSONArray("subjects");
+            String genre = (subjectsArray != null && subjectsArray.length() > 0) ? subjectsArray.getJSONObject(0).getString("name") : (String) genreComboBox.getSelectedItem();
 
             judulLabel.setText("Judul: " + title);
             penulisLabel.setText("Penulis: " + authors);
@@ -139,7 +140,7 @@ public class AddBookISBNFrame extends JFrame {
             // Assuming the data is already fetched and displayed
             String judul = judulLabel.getText().replace("Judul: ", "");
             String penulis = penulisLabel.getText().replace("Penulis: ", "");
-            String genre = genreLabel.getText().replace("Genre: ", "");
+            String genre = (String) genreComboBox.getSelectedItem();
             String gambarSampul = coverLabel.getText().replace("Gambar Sampul: ", "");
 
             Buku buku = new Buku(0, judul, penulis, genre, 0, gambarSampul, isbn);

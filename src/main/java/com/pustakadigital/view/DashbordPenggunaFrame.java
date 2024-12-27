@@ -16,6 +16,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import net.coobird.thumbnailator.Thumbnails;
+import java.io.InputStream;
 
 public class DashbordPenggunaFrame extends JFrame {
     private JPanel bookPanel;
@@ -187,24 +192,49 @@ public class DashbordPenggunaFrame extends JFrame {
 
         // Gambar sampul buku
         String coverUrl = buku.getGambarSampul();
-        if (coverUrl != null && !coverUrl.isEmpty()) {
-            try {
-                ImageIcon imageIcon;
-                if (isFromISBN(buku)) {
-                    URL url = new URI(coverUrl).toURL(); // Convert URI to URL
-                    imageIcon = new ImageIcon(url); // Dari URL
+        System.out.println("Fetching image from URL: " + coverUrl); // Debugging
+
+        BufferedImage image = null;
+        try {
+            if (coverUrl != null && !coverUrl.isEmpty()) {
+                if (coverUrl.startsWith("http://") || coverUrl.startsWith("https://")) {
+                    URL url = new URL(coverUrl);
+                    image = ImageIO.read(url);
                 } else {
-                    imageIcon = new ImageIcon(coverUrl); // Dari path lokal
+                    File file = new File(coverUrl);
+                    if (file.exists()) {
+                        image = ImageIO.read(file);
+                    } else {
+                        System.out.println("File tidak ditemukan: " + coverUrl);
+                    }
                 }
-                Image image = imageIcon.getImage().getScaledInstance(150, 200, Image.SCALE_SMOOTH);
-                JLabel imageLabel = new JLabel(new ImageIcon(image));
+            }
+
+            if (image == null) {
+                // Use a default image if the image is null
+                InputStream defaultImageStream = getClass().getResourceAsStream("/images/default.png");
+                if (defaultImageStream != null) {
+                    image = ImageIO.read(defaultImageStream);
+                } else {
+                    System.out.println("Default image not found.");
+                }
+            }
+
+            if (image != null) {
+                Image scaledImage = image.getScaledInstance(140, 160, Image.SCALE_SMOOTH);
+                JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
                 imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
-            } catch (IOException | URISyntaxException e) {
-                e.printStackTrace();
+            } else {
+                JLabel imageLabel = new JLabel("Image not available");
+                imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
             }
-        } else {
-            System.out.println("Cover URL is empty or null."); // Debugging
+        } catch (Exception e) {
+            e.printStackTrace();
+            JLabel imageLabel = new JLabel("Error loading image");
+            imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            bukuPanelItem.add(imageLabel, BorderLayout.CENTER);
         }
 
         // Panel teks (judul dan pengarang)

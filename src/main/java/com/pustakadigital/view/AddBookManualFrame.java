@@ -117,12 +117,16 @@ public class AddBookManualFrame extends JFrame {
             }
 
             String gambarSampul = imagePathLabel.getText();
+            System.out.println("Path gambar yang diset: " + gambarSampul); // Debugging
+
             if (gambarSampul.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Silakan pilih gambar sampul!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             Buku buku = new Buku(0, judul, penulis, genre, tahun, gambarSampul);
+            System.out.println("Buku yang disimpan: " + buku); // Debugging
+
             bukuDAO.addBuku(buku);
             JOptionPane.showMessageDialog(null, "Buku berhasil disimpan!");
 

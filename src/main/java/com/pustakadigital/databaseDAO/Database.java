@@ -18,8 +18,6 @@ public class Database {
             }
         } catch (SQLException e) {
             System.out.println("Error connecting to database: " + e.getMessage());
-            // Optional: Show a dialog to the user
-            // JOptionPane.showMessageDialog(null, "Error connecting to database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
         return connection;
     }

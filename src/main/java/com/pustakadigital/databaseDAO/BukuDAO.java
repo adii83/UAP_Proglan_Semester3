@@ -17,30 +17,19 @@ public class BukuDAO {
     }
 
     public void addBuku(Buku buku) {
-        if (isIsbnExists(buku.getIsbn())) {
-            System.out.println("ISBN sudah ada! Buku tidak dapat ditambahkan.");
-            return; // Buku tidak ditambahkan jika ISBN sudah ada
+        String query = "INSERT INTO buku (judul, penulis, genre, tahun, gambarSampul) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = Database.connect();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, buku.getJudul());
+            stmt.setString(2, buku.getPenulis());
+            stmt.setString(3, buku.getGenre());
+            stmt.setInt(4, buku.getTahun());
+            stmt.setString(5, buku.getGambarSampul());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error adding book: " + e.getMessage());
         }
-
-        String query = "INSERT INTO buku (isbn, judul, penulis, genre, tahun, gambar_sampul) VALUES (?, ?, ?, ?, ?, ?)";
-    try (PreparedStatement stmt = connection.prepareStatement(query)) {
-        stmt.setString(1, buku.getIsbn());
-        stmt.setString(2, buku.getJudul());
-        stmt.setString(3, buku.getPenulis());
-        stmt.setString(4, buku.getGenre());
-        stmt.setInt(5, buku.getTahun());
-        stmt.setString(6, buku.getGambarSampul());
-        
-        int result = stmt.executeUpdate();
-        if (result > 0) {
-            System.out.println("Buku berhasil ditambahkan!");
-        } else {
-            System.out.println("Gagal menambahkan buku!");
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-}
 
     public boolean isIsbnExists(String isbn) {
         String query = "SELECT COUNT(*) FROM buku WHERE isbn = ?";
@@ -68,7 +57,7 @@ public class BukuDAO {
                         rs.getString("penulis"),
                         rs.getString("genre"),
                         rs.getInt("tahun"),
-                        rs.getString("gambar_sampul"),
+                        rs.getString("gambarSampul"),
                         rs.getString("isbn")
                 );
                 bukuList.add(buku);
@@ -80,7 +69,7 @@ public class BukuDAO {
     }
 
     public void updateBuku(Buku buku) {
-        String query = "UPDATE buku SET judul = ?, penulis = ?, genre = ?, tahun = ?, gambar_sampul = ? WHERE id = ?";
+        String query = "UPDATE buku SET judul = ?, penulis = ?, genre = ?, tahun = ?, gambarSampul = ? WHERE id = ?";
         try (Connection conn = Database.connect();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, buku.getJudul());
@@ -108,7 +97,7 @@ public class BukuDAO {
                     resultSet.getString("judul"),
                     resultSet.getString("penulis"),
                     resultSet.getString("genre"),
-                    resultSet.getString("gambar_sampul"),
+                    resultSet.getString("gambarSampul"),
                     resultSet.getString("isbn")
                 );
             }
