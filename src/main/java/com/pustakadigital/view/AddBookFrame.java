@@ -133,6 +133,11 @@ public class AddBookFrame extends JFrame {
                 ((DashbordPenggunaFrame) parentFrame).refreshBukuList();
             }
 
+            // Panggil refreshCallback jika tidak null
+            if (refreshCallback != null) {
+                refreshCallback.run();
+            }
+
             dispose();
         }
     }
