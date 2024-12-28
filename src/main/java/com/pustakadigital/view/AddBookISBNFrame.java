@@ -96,18 +96,44 @@ public class AddBookISBNFrame extends JFrame {
         JSONObject bookInfo = openLibraryAPI.getBookInfoByISBN(isbn);
 
         if (bookInfo != null) {
-            String title = bookInfo.optString("title", "Judul tidak tersedia");
-            JSONArray authorsArray = bookInfo.optJSONArray("authors");
-            String authors = formatAuthors(authorsArray);
-            String coverUrl = bookInfo.optJSONObject("cover").optString("large", "");
+            System.out.println("Data dari API: " + bookInfo.toString());
 
-            JSONArray subjectsArray = bookInfo.optJSONArray("subjects");
-            String genre = (subjectsArray != null && subjectsArray.length() > 0) ? subjectsArray.getJSONObject(0).getString("name") : (String) genreComboBox.getSelectedItem();
+            JSONObject bookDetails = bookInfo.optJSONObject("ISBN:" + isbn);
+            if (bookDetails != null) {
+                String title = bookDetails.optString("title", "Judul tidak tersedia");
+                JSONArray authorsArray = bookDetails.optJSONArray("authors");
+                String authors = formatAuthors(authorsArray);
 
-            judulLabel.setText("Judul: " + title);
-            penulisLabel.setText("Penulis: " + authors);
-            genreLabel.setText("Genre: " + genre);
-            coverLabel.setText("Gambar Sampul: " + coverUrl);
+                if (title.equals("Judul tidak tersedia")) {
+                    System.out.println("Judul tidak ditemukan dalam respons API.");
+                }
+                if (authors.isEmpty()) {
+                    System.out.println("Penulis tidak ditemukan dalam respons API.");
+                }
+
+                JSONObject coverObject = bookDetails.optJSONObject("cover");
+                String coverUrl = coverObject != null ? coverObject.optString("large", "") : "";
+
+                System.out.println("Cover object: " + coverObject);
+                System.out.println("Cover URL: " + coverUrl);
+
+                if (coverUrl.isEmpty()) {
+                    coverUrl = "path/to/default/image.png";
+                    System.out.println("Using default image: " + coverUrl);
+                } else {
+                    System.out.println("Fetching image from URL: " + coverUrl);
+                }
+
+                JSONArray subjectsArray = bookInfo.optJSONArray("subjects");
+                String genre = (subjectsArray != null && subjectsArray.length() > 0) ? subjectsArray.getJSONObject(0).getString("name") : (String) genreComboBox.getSelectedItem();
+
+                judulLabel.setText("Judul: " + title);
+                penulisLabel.setText("Penulis: " + authors);
+                genreLabel.setText("Genre: " + genre);
+                coverLabel.setText("Gambar Sampul: " + coverUrl);
+            } else {
+                System.out.println("Detail buku tidak ditemukan untuk ISBN ini.");
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Tidak ada data yang ditemukan untuk ISBN ini.", "Error", JOptionPane.ERROR_MESSAGE);
         }
